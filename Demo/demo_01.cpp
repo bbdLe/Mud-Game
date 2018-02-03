@@ -2,7 +2,7 @@
  * @Author: bbdle 
  * @Date: 2018-02-03 20:57:42 
  * @Last Modified by: bbdle
- * @Last Modified time: 2018-02-03 21:25:17
+ * @Last Modified time: 2018-02-03 22:51:31
  */
 
 // Sockets API
@@ -74,7 +74,7 @@ int main(int argc, char** argv)
     err = bind(sock, (struct sockaddr*)&socketaddress, sa_size);
 
     // check error
-    if (sock == -1)
+    if (err == -1)
     {
         cout << "Socket binding error!" << endl;
         return -1;
@@ -85,7 +85,7 @@ int main(int argc, char** argv)
     err = listen(sock, 16);
 
     // check error
-    if (sock == -1)
+    if (err == -1)
     {
         cout << "Socket listening error!" << endl;
         return 0;
