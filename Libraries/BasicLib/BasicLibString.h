@@ -2,7 +2,7 @@
  * @Author: bbdle 
  * @Date: 2018-02-04 20:57:09 
  * @Last Modified by: bbdle
- * @Last Modified time: 2018-02-04 23:48:33
+ * @Last Modified time: 2018-02-05 00:00:47
  */
 
 #ifndef __BASICLIBSTRING_H
@@ -130,7 +130,7 @@ namespace BasicLib
             return str.str();
         }
 
-        return str.str() + std::string(p_width - str.str().size(), "");
+        return str.str() + std::string(p_width - str.str().size(), ' ');
     }
 
     template<typename type>
