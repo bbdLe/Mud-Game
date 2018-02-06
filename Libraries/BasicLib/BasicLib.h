@@ -2,7 +2,7 @@
  * @Author: bbdle 
  * @Date: 2018-02-04 23:11:00 
  * @Last Modified by: bbdle
- * @Last Modified time: 2018-02-06 15:20:16
+ * @Last Modified time: 2018-02-06 16:44:33
  */
 
 #ifndef __BASICLIB_H
@@ -12,5 +12,6 @@
 #include "BasicLibTime.h"
 #include "BasicLibRandom.h"
 #include "BasicLibLogger.h"
+#include "BasicLibFunctions.h"
 
 #endif
