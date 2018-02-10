@@ -2,7 +2,7 @@
  * @Author: bbdle 
  * @Date: 2018-02-05 22:39:34 
  * @Last Modified by: bbdle
- * @Last Modified time: 2018-02-06 13:02:13
+ * @Last Modified time: 2018-02-10 16:43:40
  */
 
 #ifndef __BASICLIBRANDOM_H
@@ -40,7 +40,7 @@ namespace BasicLib
     };
 
     typedef linear_congruency<uint32, 2147483648u, 1103515245, 12345> random;
-    typedef linear_congruency<uint64, 18446744073709551615, 6364136223846793005, 12345> randon64;
+    typedef linear_congruency<uint64, 18446744073709551615u, 6364136223846793005, 12345> randon64;
 
     // ============================================================
     // random percent generator

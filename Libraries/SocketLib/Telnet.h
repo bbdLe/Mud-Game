@@ -2,7 +2,7 @@
  * @Author: bbdle 
  * @Date: 2018-02-08 00:00:32 
  * @Last Modified by: bbdle
- * @Last Modified time: 2018-02-08 00:29:48
+ * @Last Modified time: 2018-02-10 16:36:44
  */
 
 #ifndef __TELNET_H
@@ -58,6 +58,11 @@ namespace SocketLib
         void Translate(Connection<Telnet>& p_conn, char* p_buffer, int p_size);
 
         void SendString(Connection<Telnet>& p_conn, std::string p_string);
+
+        int Buffered() const
+        {
+            return m_buffersize;
+        }
 
     private:
         char m_buffer[BUFFERSIZE];
