@@ -2,7 +2,7 @@
  * @Author: bbdle 
  * @Date: 2018-02-09 12:19:16 
  * @Last Modified by: bbdle
- * @Last Modified time: 2018-02-10 16:35:34
+ * @Last Modified time: 2018-02-25 23:20:05
  */
 
 #ifndef __PLAYER_H
@@ -30,8 +30,6 @@ using std::string;
 namespace MUD
 {
     const int PLAYERITEMS = 16;
-
-    typedef entityid room;
 
     class Player : public Entity
     {

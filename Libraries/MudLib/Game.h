@@ -2,7 +2,7 @@
  * @Author: bbdle 
  * @Date: 2018-02-09 23:38:36 
  * @Last Modified by: bbdle
- * @Last Modified time: 2018-02-10 16:32:52
+ * @Last Modified time: 2018-02-26 00:40:31
  */
 
 #ifndef __GAME_H
@@ -13,6 +13,8 @@
 #include "PlayerDatabase.h"
 #include "DatabasePointer.h"
 #include "MUDLogs.h"
+#include "Room.h"
+#include "Store.h"
 #include <string>
 
 using SocketLib::Telnet;
@@ -73,6 +75,23 @@ namespace MUD
         static BasicLib::Timer& GetTimer() { return s_timer; }
 
         static bool& Running()             { return s_running; }
+
+        
+        static string PrintRoom(room p_room);
+
+        static void SendRoom(string p_text, room p_room);
+
+        void Move(int p_direction);
+
+        void GetItem(string p_item);
+
+        void DropItem(string p_item);
+
+        static string StoreList(entityid p_store);
+
+        void Buy(const string& p_item);
+
+        void Sell(const string& p_item);
 
     private:
         player m_player;

@@ -2,7 +2,7 @@
  * @Author: bbdle 
  * @Date: 2018-02-04 20:52:21 
  * @Last Modified by: bbdle
- * @Last Modified time: 2018-02-05 22:19:18
+ * @Last Modified time: 2018-02-25 23:19:22
  */
 
 #include "BasicLibTime.h"
@@ -102,37 +102,37 @@ namespace BasicLib
         m_inittime = GetTimeMS();
     }
 
-    sint64 Timer::GetMS()
+    sint64 Timer::GetMS() const
     {
         return (GetTimeMS() - m_inittime) + m_starttime;
     }
 
-    sint64 Timer::GetS()
+    sint64 Timer::GetS() const
     {
         return GetMS() / 1000;
     }
 
-    sint64 Timer::GetM()
+    sint64 Timer::GetM() const
     {
         return GetMS() / 60000;
     }
 
-    sint64 Timer::GetH()
+    sint64 Timer::GetH() const
     {
         return GetMS() / 3600000;
     }
 
-    sint64 Timer::GetD()
+    sint64 Timer::GetD() const
     {
         return GetMS() / 86400000;
     }
 
-    sint64 Timer::GetY()
+    sint64 Timer::GetY() const
     {
         return GetD() / 365;
     }
 
-    std::string Timer::GetString()
+    std::string Timer::GetString() const
     {
         std::string str;
         sint64 y = GetY();
