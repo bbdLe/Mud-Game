@@ -14,6 +14,7 @@
 #include <fstream>
 #include <iterator>
 #include "Entity.h"
+#include <iostream>
 
 namespace MUD
 {

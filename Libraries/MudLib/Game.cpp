@@ -584,7 +584,9 @@ namespace MUD
 
     string Game::StoreList(entityid p_store)
     {
+
         Store& s = StoreDatabase::get(p_store);
+
 
         string output = white + bold + 
                     "--------------------------------------------------------------------------------\r\n";
@@ -592,7 +594,7 @@ namespace MUD
         output += "--------------------------------------------------------------------------------\r\n";
         output += " Item                           | Price\r\n";
         output += "--------------------------------------------------------------------------------\r\n";
-        
+
         for(auto iter = s.begin(); iter != s.end(); ++iter)
         {
             output += " " + tostring((*iter)->Name(), 31) + "| ";

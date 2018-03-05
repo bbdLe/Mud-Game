@@ -28,7 +28,6 @@ namespace MUD
             m_vector[id].LoadTemplate(file);
             file >> std::ws;
         }
-        std::cout << m_vector.size() << std::endl;
     }
 
     void RoomDatabase::LoadData()

@@ -9,8 +9,6 @@
 #include "MudLib/PlayerDatabase.h"
 #include "MudLib/Item.h"
 #include "MudLib/ItemDatabase.h"
-#include "MudLib/RoomDatabase.h"
-#include "MudLib/StoreDatabase.h"
 
 #include "ThreadLib/ThreadLib.h"
 #include "SocketLib/SocketLib.h"
@@ -27,9 +25,6 @@ int main(int argc, char** argv)
     {
         ItemDatabase::Load();
         PlayerDatabase::Load();
-        RoomDatabase::LoadTemplates();
-        RoomDatabase::LoadData();
-        StoreDatabase::Load();
 
 
         ListeningManager<Telnet, Logon> lm;
@@ -65,5 +60,4 @@ int main(int argc, char** argv)
         ERRORLOG.Log( "Unspecified Error" );
     }
     PlayerDatabase::Save();
-    RoomDatabase::SaveData();
 }
