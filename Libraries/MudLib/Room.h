@@ -2,7 +2,7 @@
  * @Author: bbdle 
  * @Date: 2018-02-25 12:04:03 
  * @Last Modified by: bbdle
- * @Last Modified time: 2018-02-25 23:27:38
+ * @Last Modified time: 2018-03-08 23:39:06
  */
 
 #ifndef __ROOM_H
@@ -15,6 +15,7 @@
 #include "BasicLib/BasicLib.h"
 #include "Entity.h"
 #include "Item.h"
+#include "Enemy.h"
 #include "Attributes.h"
 #include "DatabasePointer.h"
 
@@ -22,8 +23,8 @@ using std::list;
 
 namespace MUD
 {
-    typedef entityid enemytemplate;
-    typedef entityid enemy;
+    //typedef entityid enemytemplate;
+    //typedef entityid enemy;
 
     class Room : public Entity
     {
@@ -50,10 +51,13 @@ namespace MUD
 
         item FindItem(const string& p_item);
         void AddItem(item p_item);
-
         void RemoveItem(item p_item);
+
+        enemy FindEnemy(const string& p_enemy);
+        void AddEnemy(enemy p_enemy);
+        void RemoveEnemy(enemy p_enemy);
+
         void LoadTemplate(std::istream& p_stream);
-        
         void LoadData(std::istream& p_stream);
         void SaveData(std::ostream& p_stream);
 

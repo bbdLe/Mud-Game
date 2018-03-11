@@ -3,6 +3,7 @@
 
 #include <string>
 #include "BasicLib/BasicLib.h"
+#include "MudLib/MUDLogs.h"
 
 namespace MUD
 {

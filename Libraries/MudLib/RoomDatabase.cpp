@@ -48,7 +48,7 @@ namespace MUD
 
     void RoomDatabase::SaveData()
     {
-        std::ofstream file("/home/mud_game/Libraries/Maps/default.map");
+        std::ofstream file("/home/mud_game/Libraries/Maps/default.data");
 
         for(auto iter = begin(); iter != end(); ++iter)
         {

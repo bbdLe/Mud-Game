@@ -3,6 +3,7 @@
 
 #include "Room.h"
 #include "BasicLib/BasicLib.h"
+#include "MudLib/MUDLogs.h"
 
 using namespace BasicLib;
 using std::string;
@@ -115,4 +116,34 @@ namespace MUD
         p_stream << "0\n";
         p_stream << "[MONEY] " << m_money << "\n";
     }
+
+    enemy Room::FindEnemy(const std::string& p_enemy)
+    {
+        auto iter = BasicLib::double_find_if(
+                        m_enemies.begin(),
+                        m_enemies.end(),
+                        matchentityfull(p_enemy),
+                        matchentity(p_enemy));
+        
+        if(iter == m_enemies.end())
+        {
+            return 0;
+        }
+
+        return *iter;
+    }
+
+    void Room::AddEnemy(enemy p_enemy)
+    {
+        m_enemies.push_back(p_enemy);
+    }
+
+    void Room::RemoveEnemy(enemy p_enemy)
+    {
+        m_enemies.erase(std::find(m_enemies.begin(),
+                                  m_enemies.end(),
+                                  (entityid)p_enemy));
+    }
+
+
 }

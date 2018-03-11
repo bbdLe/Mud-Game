@@ -47,7 +47,8 @@ namespace MUD
 
         int Level() { return m_level; }
 
-        
+        // GOD
+        void BecomeStrong();
 
         void RecalculateStats();
 
@@ -95,7 +96,7 @@ namespace MUD
 
         int Items() { return m_items; }
 
-        int MaxItems() const { return m_items; }
+        int MaxItems() const { return PLAYERITEMS; }
 
         item Weapon()
         {

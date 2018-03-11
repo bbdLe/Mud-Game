@@ -63,6 +63,19 @@ namespace MUD
         return false;
     }
 
+    void Player::BecomeStrong()
+    {
+        AddToBaseAttr(STRENGTH, 100000);
+        AddToBaseAttr(HEALTH, 100000);
+        AddToBaseAttr(AGILITY, 100000);
+        AddToBaseAttr(MAXHITPOINTS, 100000);
+        AddToBaseAttr(ACCURACY, 100000);
+        AddToBaseAttr(DODGING, 100000);
+        AddToBaseAttr(STRIKEDAMAGE, 100000);
+        AddToBaseAttr(DAMAGEABSORB, 100000);
+        AddToBaseAttr(HPREGEN, 100000);
+    }
+
     void Player::RecalculateStats()
     {
         m_attributes[MAXHITPOINTS] = 10 + static_cast<int>(m_level * (GetAttr(HEALTH) / 1.5));
@@ -134,6 +147,7 @@ namespace MUD
 
     bool Player::PickUpItem(item p_item)
     {
+        USERLOG.Log("Current Items Nums : " + tostring(m_items));
         if(m_items < MaxItems())
         {
             item* iter = m_inventory;

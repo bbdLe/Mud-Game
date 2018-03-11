@@ -2,6 +2,7 @@
 #include "ItemDatabase.h"
 #include "PlayerDatabase.h"
 #include "RoomDatabase.h"
+#include "EnemyDatabase.h"
 
 #define DATABASEPOINTERIMPL(pt, t, db)                  \
 t& pt::operator*()                                      \
@@ -26,4 +27,6 @@ namespace MUD
     DATABASEPOINTERIMPL(player, Player, PlayerDatabase)
     DATABASEPOINTERIMPL(item, Item, ItemDatabase)
     DATABASEPOINTERIMPL(room, Room, RoomDatabase)
+    DATABASEPOINTERIMPL(enemy, Enemy, EnemyDatabase)
+    DATABASEPOINTERIMPL(enemytemplate, EnemyTemplate, EnemyTemplateDatabase)
 }

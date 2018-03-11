@@ -2,7 +2,7 @@
  * @Author: bbdle 
  * @Date: 2018-02-09 23:49:20 
  * @Last Modified by: bbdle
- * @Last Modified time: 2018-02-26 00:40:31
+ * @Last Modified time: 2018-03-10 23:58:37
  */
 
 #include "Logon.h"
@@ -12,8 +12,10 @@
 #include "PlayerDatabase.h"
 #include "RoomDatabase.h"
 #include "StoreDatabase.h"
+#include "EnemyDatabase.h"
 #include "BasicLib/BasicLib.h"
 #include <iostream>
+#include <iterator>
 
 using namespace SocketLib;
 using namespace BasicLib;
@@ -204,6 +206,20 @@ namespace MUD
             return;
         }
 
+        if(firstword == "become" && p.Rank() >= ADMIN)
+        {
+            if(BasicLib::LowerCase(ParseWord(p_data, 1)) == "strong")
+            {
+                BecomeStrong();
+                p.SendString(red + bold + "You have became strong!");
+            }
+            else
+            {
+                p.SendString(red + bold + "Do you mean become strong?");
+            }
+            return;
+        }
+
         // kick
         if(firstword == "kick" && p.Rank() >= GOD)
         {
@@ -225,6 +241,13 @@ namespace MUD
 
             LogoutMessage(iter->Name() + " has been kicked by " + p.Name() + "!!!");
 
+            return;
+        }
+
+        // 攻击敌人
+        if(firstword == "attack" || firstword == "a")
+        {
+            PlayerAttack(RemoveWord(p_data, 0 ));
             return;
         }
 
@@ -312,6 +335,7 @@ namespace MUD
     void Game::Leave()
     {
         m_player->Active() = false;
+        m_player->CurrentRoom()->RemovePlayer(m_player);
 
         if(m_connection->Closed())
         {
@@ -395,7 +419,7 @@ namespace MUD
 
         desc += "\r\n";
 
-        // items
+        // money
         temp = bold + yellow + "You see: ";
         count = 0;
         if(p_room->Money() > 0)
@@ -404,12 +428,10 @@ namespace MUD
             temp += "$" + tostring(p_room->Money()) + ", ";
         }
 
-        auto itemiter = p_room->Items().begin();
         for(auto itemiter = p_room->Items().begin(); itemiter != p_room->Items().end(); ++itemiter)
         {
             ++count;
             temp += (*itemiter)->Name() + ", ";
-            ++itemiter;
         }
 
         if(count > 0)
@@ -431,6 +453,23 @@ namespace MUD
             temp.erase(temp.size() - 2, 2);
             desc += temp + "\r\n";
         }
+
+        temp = bold + red + "Enemies: ";
+        count = 0;
+        std::list<enemy>::iterator enemyitr = p_room->Enemies().begin();
+        while(enemyitr != p_room->Enemies().end())
+        {
+            temp += (*enemyitr)->Name() + ", ";
+            count++;
+            ++enemyitr;
+        }
+
+        if(count > 0)
+        {
+            temp.erase(temp.size() - 2, 2);
+            desc += temp + "\r\n";
+        }
+
 
         return desc;
     }
@@ -878,5 +917,199 @@ namespace MUD
 
         LogoutMessage(p.Name() + " leaves to edit stats");
         m_connection->AddHandler(new Train(*m_connection, p.ID()));
+    }
+
+    void Game::BecomeStrong()
+    {
+        m_player->BecomeStrong();
+    }
+
+    void Game::EnemyAttack(enemy p_enemy)
+    {
+        Enemy& e = *p_enemy;
+        room r = e.CurrentRoom();
+        sint64 now = Game::GetTimer().GetMS();
+        std::list<player>::iterator iter = r->Players().begin();
+        
+        std::advance(iter, BasicLib::RandomInt(0, r->Players().size() - 1));
+        Player& p = **iter;
+
+        int damage;
+        
+        // 无武器
+        if(e.Weapon() == 0)
+        {
+            damage = BasicLib::RandomInt(1, 3);
+            e.NextAttackTime() = now + seconds(1);
+        }
+        else
+        {
+            damage = BasicLib::RandomInt(e.Weapon()->Min(), e.Weapon()->Max());
+            e.NextAttackTime() = now + seconds(e.Weapon()->Speed());
+        }
+
+        // 闪避计算
+        if(BasicLib::RandomInt(0, 99) >= e.Accuary() - p.GetAttr(DODGING))
+        {
+            Game::SendRoom(white + e.Name() + " swings at " + p.Name() + ", but missed", e.CurrentRoom());
+
+            return;
+        }
+
+        // 固定伤害
+        damage += e.StrikeDamage();
+        // 吸收伤害
+        damage -= p.GetAttr(DAMAGEABSORB);
+
+        if(damage < 1)
+        {
+            damage = 1;
+        }
+
+        p.AddHitpoints(-damage);
+        Game::SendRoom(red + e.Name() + " hits " + p.Name() + " for " + tostring(damage) + " damage!", e.CurrentRoom());
+
+        if(p.HitPoints() <= 0)
+        {
+            // try p
+            PlayerKilled(p.ID());
+        }
+    }
+
+    void Game::PlayerKilled(player p_player)
+    {
+        Player& p = *p_player;
+
+        Game::SendRoom(red + bold + p.Name() + " has died!", p.CurrentRoom());
+
+        // 损耗钱
+        money m = p.Money() / 20;
+        if(m > 0)
+        {
+            p.CurrentRoom()->Money() += m;
+            p.Money() -= m;
+            Game::SendRoom(cyan + "$" + BasicLib::tostring(m) + "drops to the ground.", p.CurrentRoom());
+        }
+
+        // 掉物品
+        if(p.Items() > 0)
+        {
+            int index = -1;
+
+            // 随机取出一个物品, 后续应该优化
+            while(p.GetItem(index = RandomInt(0, PLAYERITEMS - 1)) == 0);
+            item i = p.GetItem(index);
+            p.CurrentRoom()->AddItem(i);
+            p.DropItem(i);
+
+            Game::SendRoom(cyan + i->Name() + " drops to the ground.", p.CurrentRoom());
+        }
+
+        // 掉经验
+        int exp = p.Experience() / 20;
+        p.Experience() -= exp;
+    
+        // 回城
+        p.CurrentRoom()->RemovePlayer(p_player);
+        p.CurrentRoom() = 1;
+        p.CurrentRoom()->AddPlayer(p_player);
+
+        // 掉血
+        p.SetHitpoints(static_cast<int>(p.GetAttr(MAXHITPOINTS) * 0.7));
+        p.SendString(white + bold + "You have died, but have been ressurected in " + p.CurrentRoom()->Name());
+        p.SendString(red + bold + "You have lost " + tostring(exp) + " experience!");
+        p.SendString(white + bold + p.Name() + " appears out to nowhere");
+    }
+
+    void Game::PlayerAttack(const std::string& p_enemy)
+    {
+        Player& p = *m_player;
+        sint64 now = Game::GetTimer().GetMS();
+
+        // CD时间
+        if(now < p.NextAttackTime())
+        {
+            p.SendString(red + bold + "You can't attack yet");
+            return;
+        }
+
+        for(auto iter = p.CurrentRoom()->Enemies().begin(); iter != p.CurrentRoom()->Enemies().end(); ++iter)
+        {
+            p.SendString((*iter)->Name());
+        }
+
+        enemy ptr = p.CurrentRoom()->FindEnemy(p_enemy);
+        if(ptr == 0)
+        {
+            p.SendString(red + bold + "You don't see the enemy");
+            return;
+        }
+
+        Enemy& e = *ptr;
+        
+        int damage;
+        if(p.Weapon() == 0)
+        {
+            damage = BasicLib::RandomInt(1, 3);
+            p.NextAttackTime() = now + seconds(1);
+        }
+        else
+        {
+            damage = BasicLib::RandomInt(p.Weapon()->Min(), p.Weapon()->Max());
+            p.NextAttackTime() == now + seconds(p.Weapon()->Speed()); 
+        }
+
+        if(BasicLib::RandomInt(0, 99) >= p.GetAttr(ACCURACY) - e.Dodging())
+        {
+            SendRoom(white + p.Name() + " swings at " + e.Name() + " but missed", p.CurrentRoom());
+            return;
+        }
+
+        damage += p.GetAttr(STRIKEDAMAGE);
+        damage -= e.DamageAbsorb();
+        
+        if(damage < 1)
+        {
+            damage = 1;
+        }
+
+        e.HitPoints() -= damage;
+        SendRoom(red + p.Name() + " hits " + e.Name() + " for " + tostring(damage) + " damage!", p.CurrentRoom());
+        
+        if(e.HitPoints() <= 0)
+        {
+            EnemyKilled(e.ID(), m_player);
+        }
+    }
+
+    void Game::EnemyKilled(enemy p_enemy, player p_player)
+    {
+        Enemy& e = *p_enemy;
+
+        SendRoom(cyan + bold + e.Name() + " has died!", e.CurrentRoom());
+
+        // 掉钱
+        money m = BasicLib::RandomInt(e.MoneyMin(), e.MoneyMax());
+        if(m > 0)
+        {
+            e.CurrentRoom()->Money() += m;
+            SendRoom(cyan + "$" + tostring(m) + " drops to the ground.", e.CurrentRoom());
+        }
+
+        // 掉落物品
+        for(auto iter = e.LootList().begin(); iter != e.LootList().end(); ++iter)
+        {
+            //if(BasicLib::RandomInt(0, 99) < iter->second)
+            //{
+                e.CurrentRoom()->AddItem(iter->first);
+                SendRoom(cyan + (iter->first)->Name() + " drops to the ground.", e.CurrentRoom());
+            //}
+        }
+
+        Player& p = *p_player;
+        p.Experience() += e.Experience();
+        p.SendString(cyan + bold + "You gain " + tostring(e.Experience()) + " experience.");
+
+        EnemyDatabase::Delete(p_enemy);
     }
 }

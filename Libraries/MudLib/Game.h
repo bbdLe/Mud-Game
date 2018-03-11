@@ -14,6 +14,7 @@
 #include "DatabasePointer.h"
 #include "MUDLogs.h"
 #include "Room.h"
+#include "Enemy.h"
 #include "Store.h"
 #include <string>
 
@@ -66,16 +67,13 @@ namespace MUD
         string PrintInventory();
 
         
-        
         bool UseItem(const string& p_item);
 
         bool RemoveItem(string p_item);
 
-
         static BasicLib::Timer& GetTimer() { return s_timer; }
 
         static bool& Running()             { return s_running; }
-
         
         static string PrintRoom(room p_room);
 
@@ -93,6 +91,17 @@ namespace MUD
 
         void Sell(const string& p_item);
 
+        void BecomeStrong();
+
+        // Enemy Function
+        static void EnemyAttack(enemy p_enemy);
+
+        static void PlayerKilled(player p_player);
+
+        void PlayerAttack(const std::string& p_enemy);
+
+        static void EnemyKilled(enemy p_enemy, player p_player);
+        
     private:
         player m_player;
         string m_lastcommand;

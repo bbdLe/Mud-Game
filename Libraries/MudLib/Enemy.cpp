@@ -13,7 +13,7 @@ namespace MUD
     EnemyTemplate::EnemyTemplate()
     {
         m_hitpoints = 0;
-        m_accuracy = 0;
+        m_accurary = 0;
         m_dodging = 0;
         m_strikedamage = 0;
         m_damageabsorb = 0;
@@ -35,6 +35,7 @@ namespace MUD
     {
         m_template = p_template;
         m_hitpoints = p_template->m_hitpoints;
+        m_name = p_template->Name();
     }
 
     // 从配置读取敌人信息
@@ -45,22 +46,22 @@ namespace MUD
         p_stream >> temp >> std::ws;
         std::getline(p_stream, t.m_name);
 
-        pstream >> temp >> t.m_hitpoints;
-        pstream >> temp >> t.m_accuracy;
-        pstream >> temp >> t.m_dodging;
-        pstream >> temp >> t.m_strikedamage;
-        pstream >> temp >> t.m_damageabsorb;
-        pstream >> temp >> t.m_experience;
-        pstream >> temp >> t.m_weapon;
-        pstream >> temp >> t.m_moneymin;
-        pstream >> temp >> t.m_moneymax;
+        p_stream >> temp >> t.m_hitpoints;
+        p_stream >> temp >> t.m_accurary;
+        p_stream >> temp >> t.m_dodging;
+        p_stream >> temp >> t.m_strikedamage;
+        p_stream >> temp >> t.m_damageabsorb;
+        p_stream >> temp >> t.m_experience;
+        p_stream >> temp >> t.m_weapon;
+        p_stream >> temp >> t.m_moneymin;
+        p_stream >> temp >> t.m_moneymax;
 
         t.m_loot.clear();
-        while(extract(p_stream, temp) != "[ENDLOOT]")
+        while(BasicLib::extract(p_stream, temp) != "[ENDLOOT]")
         {
             entityid id;
-            int change;
-            pstream >> id >> chance;
+            int chance;
+            p_stream >> id >> chance;
             t.m_loot.push_back(loot(id, chance));
         }
 
@@ -69,11 +70,27 @@ namespace MUD
 
     ostream& operator<<(ostream& p_stream, const Enemy& t)
     {
-        // pass
+        p_stream << "[TEMPLATEID]     " << t.m_template << "\n";
+        p_stream << "[HITPOINTS]      " << t.m_hitpoints << "\n";
+        p_stream << "[ROOM]           " << t.m_room << "\n";
+        p_stream << "[NEXTATTACKTIME] ";
+        BasicLib::insert(p_stream, t.m_nextattacktime);
+        p_stream << "\n";
+
+        return p_stream;
     }
 
     istream& operator>>(istream& p_stream, Enemy& t)
     {
-        // pass
+        std::string temp;
+
+        p_stream >> temp >> t.m_template;
+        p_stream >> temp >> t.m_hitpoints;
+        p_stream >> temp >> t.m_room;
+        p_stream >> temp;
+        BasicLib::extract(p_stream, t.m_nextattacktime);
+        t.m_name = t.Name();
+
+        return p_stream;
     }
 }

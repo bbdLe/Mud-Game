@@ -57,6 +57,8 @@ namespace MUD
     DATABASEPOINTER(player, Player);
     DATABASEPOINTER(item, Item);
     DATABASEPOINTER(room, Room);
+    DATABASEPOINTER(enemy, Enemy);
+    DATABASEPOINTER(enemytemplate, EnemyTemplate)
 }
 
 #endif

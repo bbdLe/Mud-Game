@@ -36,7 +36,7 @@ namespace MUD
         int m_weapon;               //  武器
         money m_moneymin;           //  掉落金钱最小值
         money m_moneymax;           //  掉落金钱最大值
-        list<loot> m_loot;          //  留下的物品
+        std::list<loot> m_loot;          //  留下的物品
     };
 
     // 真正的敌人
@@ -53,20 +53,20 @@ namespace MUD
 
         void LoadTemplate(enemytemplate p_template);
 
-        std::string& Name();
-
         friend ostream& operator<<(ostream& p_stream, const Enemy& t);
         friend istream& operator>>(istream& p_stream, Enemy& t);
 
-        int Accuary() const         { return m_template->m_accurary; }
-        int Dodging() const         { return m_template->m_dodging; }
-        int StrikeDamage() const    { return m_template->m_strikedamage; }
-        int DamageAbsorb() const    { return m_template->m_damageabsorb; }
-        int Experience() const      { return m_template->m_experience; }
-        int Weapon() const          { return m_tempate->m_weapon; }
-        money MoneyMin() const      { return m_template->m_moneymin; }
-        money MoneyMax() const      { return m_template->m_moneymax; }
-        list<loot&> LootList()      { return m_template->m_loot; }
+        std::string Name()               { return m_template->Name(); }
+
+        int Accuary()               { return m_template->m_accurary; }
+        int Dodging()               { return m_template->m_dodging; }
+        int StrikeDamage()          { return m_template->m_strikedamage; }
+        int DamageAbsorb()          { return m_template->m_damageabsorb; }
+        int Experience()            { return m_template->m_experience; }
+        item Weapon()               { return m_template->m_weapon; }
+        money MoneyMin()            { return m_template->m_moneymin; }
+        money MoneyMax()            { return m_template->m_moneymax; }
+        std::list<loot>& LootList()      { return m_template->m_loot; }
 
     private:
         enemytemplate m_template;           // 模板

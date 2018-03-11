@@ -83,7 +83,7 @@ namespace MUD
 
         static size_t size() { return m_map.size(); }
 
-        entityid FindOpenID()
+        static entityid FindOpenID()
         {
             if(m_map.size() == 0)
             {
